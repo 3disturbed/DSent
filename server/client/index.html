@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DSent – Client</title>
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/layout.css">
+</head>
+<body>
+  <div id="app" class="app-root">
+    <aside class="workspace-rail" aria-label="Workspaces" id="workspaceRail"></aside>
+    <aside class="channel-sidebar" aria-label="Channels" id="channelSidebar"></aside>
+    <main class="main-panel" aria-label="Messages">
+      <header class="channel-header" id="channelHeader"></header>
+      <section class="message-list" id="messageList" role="list" aria-live="polite"></section>
+      <form id="composer" class="composer" autocomplete="off">
+        <textarea id="composerInput" rows="2" placeholder="Message..." aria-label="Message input"></textarea>
+        <button type="submit">Send</button>
+      </form>
+    </main>
+    <aside class="context-panel" aria-label="Members" id="memberPanel"></aside>
+  </div>
+  <div id="toastContainer" class="toasts" aria-live="assertive" aria-atomic="true"></div>
+  <div id="modalRoot"></div>
+  <script type="module" src="/js/main.js"></script>
+</body>
+</html>

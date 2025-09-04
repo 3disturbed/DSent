@@ -1,0 +1,44 @@
+:root {
+  --bg-app: #1e1f22;
+  --bg-raised: #2b2d31;
+  --bg-interactive: #393c41;
+  --bg-accent: #4e5ee4;
+  --bg-accent-hover: #6573ff;
+  --text-primary: #ffffff;
+  --text-secondary: #c5c6c9;
+  --border-subtle: #3a3d42;
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --transition-fast: 120ms ease;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.light-theme {
+  --bg-app: #f5f7fb;
+  --bg-raised: #ffffff;
+  --bg-interactive: #e4e7ec;
+  --bg-accent: #3451e0;
+  --bg-accent-hover: #4763ff;
+  --text-primary: #1c1e21;
+  --text-secondary: #4a4d52;
+  --border-subtle: #d5d8dd;
+}
+
+.theme-toggle-btn {
+  position: fixed;
+  top: var(--space-3);
+  right: var(--space-3);
+  background: var(--bg-interactive);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+  font-size: 12px;
+}
+.theme-toggle-btn:hover { background: var(--bg-accent); }

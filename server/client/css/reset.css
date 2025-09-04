@@ -1,0 +1,5 @@
+/* Minimal reset */
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; height:100%; }
+body { font-family: system-ui, Arial, sans-serif; background: var(--bg-app); color: var(--text-primary); }
+button, input, textarea { font: inherit; }
