@@ -1,5 +1,6 @@
-import { getState, setWorkspace, setChannel, addMessage, toggleTheme, createChannel } from './state.js';
-import { renderWorkspaces, renderChannels, renderMessages, renderChannelHeader } from './render.js';
+import { getState, setWorkspace, setChannel, addMessage, toggleTheme, createChannel, mockUsers, addMessageFor, mockWorkspaces, mockChannels } from './state.js';
+import { apiGet, apiPost } from './api.js';
+import { renderWorkspaces, renderChannels, renderMessages, renderChannelHeader, renderMembers } from './render.js';
 
 const els = {
   workspaceRail: document.getElementById('workspaceRail'),
@@ -49,8 +50,9 @@ function renderAll() {
   renderWorkspaces(els.workspaceRail, s.currentWorkspaceId, (id)=> { setWorkspace(id); renderAll(); toast('Switched workspace'); });
   renderChannels(els.channelSidebar, s.currentWorkspaceId, s.currentChannelId, (cid)=> { setChannel(cid); renderAll(); });
   renderChannelHeader(els.channelHeader, s.currentChannelId);
-  renderMessages(els.messageList, s.currentChannelId, s.messages);
+  fetchMessages(s.currentChannelId);
   wireAddChannel();
+  renderMembers(document.getElementById('memberPanel'), s.currentWorkspaceId);
 }
 
 function initComposer() {
@@ -59,17 +61,37 @@ function initComposer() {
     const text = els.composerInput.value.trim();
     if (!text) return;
     const s = getState();
+    // optimistic add
     addMessage(s.currentChannelId, text);
-    els.composerInput.value='';
     renderMessages(els.messageList, s.currentChannelId, s.messages);
+    els.composerInput.value='';
+    fetch('/api/v1/messages', { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ channelId: s.currentChannelId, content: text }) })
+      .then(r => r.ok ? r.json() : Promise.reject(r))
+      .then(() => fetchMessages(s.currentChannelId, { silent:true }))
+      .catch(()=> toast('Send failed (offline?)'));
   });
 }
 
 (function bootstrap() {
   initTheme();
   initComposer();
-  renderAll();
+  bootstrapData();
+  startPresenceSimulation();
+  startMockIncomingMessages();
 })();
+
+function fetchMessages(channelId, { silent } = {}) {
+  fetch('/api/v1/messages?channelId=' + encodeURIComponent(channelId))
+    .then(r => r.ok ? r.json() : Promise.reject(r))
+    .then(payload => {
+      if (payload && payload.success) {
+        const s = getState();
+        s.messages = payload.data;
+        renderMessages(els.messageList, channelId, s.messages);
+      }
+    })
+    .catch(() => { if (!silent) toast('Load messages failed'); });
+}
 
 function wireAddChannel() {
   const btn = document.getElementById('addChannelBtn');
@@ -102,4 +124,50 @@ function openChannelModal() {
   });
   function close() { backdrop.remove(); }
   document.addEventListener('keydown', function escHandler(ev){ if (ev.key === 'Escape') { close(); document.removeEventListener('keydown', escHandler); } });
+}
+
+function startPresenceSimulation() {
+  // Randomly change a user's presence every 5 seconds for demo
+  setInterval(() => {
+  const pick = Math.floor(Math.random() * mockUsers.length);
+  const user = mockUsers[pick];
+    const statuses = ['online','idle','dnd'];
+    user.presence = statuses[Math.floor(Math.random()*statuses.length)];
+    const s = getState();
+    renderMembers(document.getElementById('memberPanel'), s.currentWorkspaceId);
+  }, 5000);
+}
+
+function startMockIncomingMessages() {
+  setInterval(() => {
+    const s = getState();
+    // pick a channel not currently viewed (if available)
+    const available = [...new Set(s.messages.map(m => m.channelId))].filter(id => id !== s.currentChannelId);
+    if (available.length === 0) return;
+    const target = available[Math.floor(Math.random()*available.length)];
+    addMessageFor(target, 'Auto update ' + new Date().toLocaleTimeString());
+    // re-render channels to update unread badges
+    renderChannels(els.channelSidebar, s.currentWorkspaceId, s.currentChannelId, (cid)=> { setChannel(cid); renderAll(); });
+  }, 7000);
+}
+
+async function bootstrapData() {
+  try {
+    const workspaces = await apiGet('/api/v1/workspaces');
+    // Replace mockWorkspaces in place (keeping references) for simplicity
+    mockWorkspaces.splice(0, mockWorkspaces.length, ...workspaces.map(w => ({ id:w.id, name:w.name, channels: [] })));
+    // Load channels for first workspace
+    if (workspaces.length) {
+      const first = workspaces[0];
+      const chs = await apiGet(`/api/v1/workspaces/${first.id}/channels`);
+      mockChannels.splice(0, mockChannels.length, ...chs.map(c => ({ id:c.id, workspaceId:c.workspaceId, name:c.name })));
+      // attach channel ids to workspace object
+      const wsObj = mockWorkspaces.find(w => w.id === first.id);
+      wsObj.channels = chs.map(c=>c.id);
+    }
+    renderAll();
+  } catch (e) {
+    console.error(e);
+    renderAll();
+  }
 }

@@ -1,4 +1,4 @@
-import { getState, mockUsers, mockWorkspaces, mockChannels } from './state.js';
+import { getState, mockUsers, mockWorkspaces, mockChannels, getUnread } from './state.js';
 
 function el(tag, className, children) {
   const e = document.createElement(tag);
@@ -36,7 +36,15 @@ export function renderChannels(container, workspaceId, currentChannelId, onSelec
   ws.channels.forEach(cid => {
     const ch = mockChannels.find(c => c.id === cid);
     if (!ch) return;
-    const item = el('div', 'channel-item' + (cid === currentChannelId ? ' active' : ''), '#' + ch.name);
+    const item = el('div', 'channel-item' + (cid === currentChannelId ? ' active' : ''), null);
+    const label = el('span', 'channel-label', '#' + ch.name);
+    const unread = getUnread(cid);
+    if (unread > 0) {
+      const badge = el('span', 'unread-badge', unread > 99 ? '99+' : String(unread));
+      item.append(label, badge);
+    } else {
+      item.append(label);
+    }
     item.tabIndex = 0;
     item.addEventListener('click', () => onSelect(cid));
     item.addEventListener('keydown', (e) => { if (e.key === 'Enter') onSelect(cid); });
@@ -76,4 +84,17 @@ export function renderMessages(container, channelId, messages) {
 export function renderChannelHeader(container, channelId) {
   const ch = mockChannels.find(c => c.id === channelId);
   container.textContent = ch ? '#' + ch.name : 'Unknown';
+}
+
+export function renderMembers(container, workspaceId) {
+  container.innerHTML = '';
+  const title = el('h4', null, 'MEMBERS');
+  container.appendChild(title);
+  mockUsers.forEach(u => {
+    const row = el('div', 'member-row');
+    const badge = el('span', 'presence presence-' + u.presence);
+    const name = el('span', 'member-name', u.displayName);
+    row.append(badge, name);
+    container.appendChild(row);
+  });
 }

@@ -1,7 +1,7 @@
 export const mockUsers = [
-  { id: 'u1', displayName: 'Alice' },
-  { id: 'u2', displayName: 'Bob' },
-  { id: 'u3', displayName: 'Cara' }
+  { id: 'u1', displayName: 'Alice', presence: 'online', roles: ['admin'] },
+  { id: 'u2', displayName: 'Bob', presence: 'idle', roles: ['member'] },
+  { id: 'u3', displayName: 'Cara', presence: 'dnd', roles: ['member'] }
 ];
 
 export const mockWorkspaces = [

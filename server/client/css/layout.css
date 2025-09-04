@@ -15,10 +15,20 @@
 .composer button { background: var(--bg-accent); color:#fff; border:none; padding: var(--space-2) var(--space-3); border-radius: var(--radius-sm); cursor:pointer; }
 .composer button:hover { background: var(--bg-accent-hover); }
 .context-panel { background: var(--bg-raised); border-left:1px solid var(--border-subtle); padding: var(--space-3) var(--space-3); overflow:auto; }
+.member-row { display:flex; align-items:center; gap: var(--space-2); padding:4px 0; font-size:13px; }
+.presence { width:10px; height:10px; border-radius:50%; display:inline-block; background:#666; position:relative; }
+.presence-online { background:#43b581; }
+.presence-idle { background:#faa61a; }
+.presence-dnd { background:#f04747; }
+.presence-offline { background:#747f8d; }
+.member-name { flex:1; overflow:hidden; text-overflow:ellipsis; }
 .channel-group { margin-bottom: var(--space-4); }
 .channel-group h4 { margin:0 0 var(--space-2) 0; font-size:12px; font-weight:600; color: var(--text-secondary); letter-spacing:0.5px; }
 .channel-item { padding:4px 8px; border-radius: var(--radius-sm); cursor:pointer; font-size:14px; }
 .channel-item.active, .channel-item:hover { background: var(--bg-interactive); }
+.channel-item { display:flex; align-items:center; justify-content:space-between; gap:6px; }
+.unread-badge { background: var(--bg-accent); color:#fff; font-size:10px; line-height:1; padding:3px 6px; border-radius:12px; min-width:20px; text-align:center; font-weight:600; }
+.channel-label { flex:1; overflow:hidden; text-overflow:ellipsis; }
 .workspace-btn { width:40px; height:40px; margin:0 auto; background: var(--bg-interactive); color: var(--text-primary); border-radius:50%; display:flex; justify-content:center; align-items:center; font-weight:600; cursor:pointer; border:2px solid transparent; }
 .workspace-btn.active { background: var(--bg-accent); }
 .workspace-btn:hover { border-color: var(--bg-accent-hover); }
