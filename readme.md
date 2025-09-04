@@ -1,5 +1,5 @@
 # D-Sent Messenger
-
+![D-Sent Messenger Logo](./assets/logo.png)
 Welcome to **D-Sent Messenger** — a decentralized, privacy-first peer-to-peer (P2P) chat platform that provides the functionality of modern communication tools (like Discord or Google Hangouts) without compromising on user privacy or requiring centralized control.
 
 ---
